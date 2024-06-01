@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My shopping list</title>
+    <link rel="stylesheet" href="shopping-list.css" />
+  </head>
+  <body>
+    <h2 class="heading">Add to shopping list</h2>
+
+    <div class="shopping-add-container">
+    <div class="shopping-add-grid">
+      <input id="input1" placeholder="Item to buy" class="item-to-buy js-item-input" type="text" />
+      <input
+        placeholder="How many to buy"
+        class="quantity-to-buy js-quantity-input"
+        type="text"
+      />
+      <input class="who-added js-who-added" placeholder="Added by" type="text">
+      <button class="add-to-shopping-list-button js-add-to-shopping-list-button">Add</button>
+    </div>
+    </div>
+
+    </div>
+    <h2 class="shopping-list-header">Shopping List</h2>
+    <div class="shopping-list-container">
+      <div class="shopping-list-grid js-shopping-list"></div>
+    </div>
+    <script src="shopping-list.js"></script>
+  </body>
+</html>
