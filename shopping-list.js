@@ -1,4 +1,4 @@
-let shoppingList = JSON.parse(localStorage.getItem("shoppingList"));
+let shoppingList = JSON.parse(localStorage.getItem("shoppingList")) || [];
 
 renderShoppingList();
 
