@@ -38,10 +38,23 @@ body {
   justify-content: center;
 }
 
-.shopping-list-grid {
+/* .shopping-list-grid {
   display: grid;
   grid-template-columns: 50px 150px 150px 150px;
   column-gap: 10px;
   row-gap: 10px;
   align-items: center;
+} */
+
+.shopping-item {
+  display: grid;
+  grid-template-columns: 50px 150px 150px 150px;
+  column-gap: 10px;
+  row-gap: 10px;
+  align-items: center;
+  font-size: larger;
 }
+
+/* .shopping-item > * {
+  margin-right: 50px;
+} */
