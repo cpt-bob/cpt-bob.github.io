@@ -58,3 +58,24 @@ body {
 /* .shopping-item > * {
   margin-right: 50px;
 } */
+
+@media (max-width: 480px) {
+  .shopping-add-container {
+    max-width: 480px;
+  }
+  .shopping-add-grid {
+    display: grid;
+    grid-template-columns: 150px 150px;
+    column-gap: 10px;
+    row-gap: 10px;
+    align-items: center;
+    margin-bottom: 100px;
+    overflow: auto;
+  }
+
+  .shopping-item {
+    display: grid;
+    grid-template-columns: 50px 100px 100px 100px;
+    font-size: large;
+  }
+}
