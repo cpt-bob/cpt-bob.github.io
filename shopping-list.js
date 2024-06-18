@@ -15,7 +15,6 @@ import {
 
 // Initialize Firebase with your project's Realtime Database URL
 const firebaseConfig = {
-  apiKey: "AIzaSyBpKsDGhucKO_QbNgjXG3vX1vuduYl8xy4",
   authDomain: "shopping-list-e939f.frebaseapp.com",
   databaseURL: "https://shopping-list-e939f-default-rtdb.firebaseio.com/",
   projectId: "shopping-list-e939f",
