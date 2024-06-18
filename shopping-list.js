@@ -22,6 +22,34 @@ const firebaseApp = initializeApp(firebaseConfig);
 const database = getDatabase(firebaseApp);
 const shoppingListRef = ref(database, "shoppingList");
 
+function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  firebase
+    .auth()
+    .signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      // Signed in
+      var user = userCredential.user;
+      // Close the popup after successful login
+      closePopup();
+    })
+    .catch((error) => {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      alert(errorMessage);
+    });
+}
+
+function showPopup() {
+  document.getElementById("loginPopup").style.display = "block";
+}
+
+function closePopup() {
+  document.getElementById("loginPopup").style.display = "none";
+}
+
 // Function to get the current user
 function getCurrentUser() {
   return new Promise((resolve, reject) => {
