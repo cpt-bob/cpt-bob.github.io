@@ -9,12 +9,17 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-database.js";
 import {
   getAuth,
+  signInWithEmailAndPassword,
   onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-auth.js";
 
 // Initialize Firebase with your project's Realtime Database URL
 const firebaseConfig = {
+  apiKey: "AIzaSyBpKsDGhucKO_QbNgjXG3vX1vuduYl8xy4",
+  authDomain: "shopping-list-e939f.frebaseapp.com",
   databaseURL: "https://shopping-list-e939f-default-rtdb.firebaseio.com/",
+  projectId: "shopping-list-e939f",
+  storageBucket: "shopping-list-e939f.appspot.com",
   // Add your other Firebase config keys here if needed
 };
 
@@ -26,23 +31,26 @@ function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  firebase
-    .auth()
-    .signInWithEmailAndPassword(email, password)
+  const auth = getAuth();
+  signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      // Signed in
-      var user = userCredential.user;
-      // Close the popup after successful login
+      // Signed in successfully
+      const user = userCredential.user;
+      console.log("User logged in:", user.uid);
+
+      // Optionally close the login popup or redirect to another page
       closePopup();
     })
     .catch((error) => {
-      var errorCode = error.code;
-      var errorMessage = error.message;
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error("Login error:", errorMessage);
       alert(errorMessage);
     });
 }
 
 function showPopup() {
+  console.log("showing popup");
   document.getElementById("loginPopup").style.display = "block";
 }
 
@@ -102,6 +110,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .querySelector(".js-add-to-shopping-list-button")
     .addEventListener("click", addToShoppingList);
+
+  // Add event listener for login button
+  document.querySelector(".js-login-button").addEventListener("click", login);
 
   // Function to add an item to the shopping list in Firebase
   async function addToShoppingList() {
