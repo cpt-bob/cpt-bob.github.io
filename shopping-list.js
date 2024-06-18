@@ -7,32 +7,50 @@ import {
   remove,
   child, // Import child function
 } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-database.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+} from "https://www.gstatic.com/firebasejs/9.6.7/firebase-auth.js";
 
 // Initialize Firebase with your project's Realtime Database URL
 const firebaseConfig = {
   databaseURL: "https://shopping-list-e939f-default-rtdb.firebaseio.com/",
+  // Add your other Firebase config keys here if needed
 };
-const firebaseApp = initializeApp(firebaseConfig);
 
-// Get a reference to the database service
+const firebaseApp = initializeApp(firebaseConfig);
 const database = getDatabase(firebaseApp);
 const shoppingListRef = ref(database, "shoppingList");
+
+// Function to get the current user
+function getCurrentUser() {
+  return new Promise((resolve, reject) => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        resolve(user);
+      } else {
+        reject("No user logged in.");
+      }
+    });
+  });
+}
 
 // Render the entire shopping list
 function renderShoppingList() {
   // Clear the existing shopping list before rendering
-  // document.querySelector(".js-shopping-list").innerHTML = "";
+  document.querySelector(".js-shopping-list").innerHTML = "";
 }
 
 // Render a single shopping list item
 function renderShoppingItem(key, shoppingItem) {
-  const { item, quantity, name } = shoppingItem;
+  const { item, quantity, addedBy } = shoppingItem;
   const html = `
     <div class="shopping-item" data-key="${key}">
       <input type="checkbox" class="chk js-check-box"/>
       <div>${item}</div>
       <div>${quantity}</div>
-      <div>Added by ${name}</div>
+      <div>Added by ${addedBy}</div>
     </div>
   `;
   document
@@ -54,6 +72,28 @@ document.addEventListener("DOMContentLoaded", () => {
     .querySelector(".js-add-to-shopping-list-button")
     .addEventListener("click", addToShoppingList);
 
+  // Function to add an item to the shopping list in Firebase
+  async function addToShoppingList() {
+    try {
+      const user = await getCurrentUser();
+      const item = document.querySelector(".js-item-input").value;
+      const quantity = document.querySelector(".js-quantity-input").value;
+
+      // Push the new item to the Firebase database, associating it with the user's UID
+      push(shoppingListRef, {
+        item,
+        quantity,
+        addedBy: user.displayName, // Use user's display name (or adjust as per your user structure)
+      });
+
+      // Clear input fields after adding item
+      document.querySelector(".js-item-input").value = "";
+      document.querySelector(".js-quantity-input").value = "";
+    } catch (error) {
+      console.error("Error adding item:", error);
+    }
+  }
+
   // Add event listener for checkbox clicks
   document
     .querySelector(".js-shopping-list")
@@ -66,24 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
         deleteItem(key);
       }
     });
-  // Function to add an item to the shopping list in Firebase
-  function addToShoppingList() {
-    const item = document.querySelector(".js-item-input").value;
-    const quantity = document.querySelector(".js-quantity-input").value;
-    const name = document.querySelector(".js-who-added").value;
-
-    // Push the new item to the Firebase database
-    push(shoppingListRef, {
-      item,
-      quantity,
-      name,
-    });
-
-    // Clear input fields after adding item
-    document.querySelector(".js-item-input").value = "";
-    document.querySelector(".js-quantity-input").value = "";
-    document.querySelector(".js-who-added").value = "";
-  }
 
   // Function to delete an item from the shopping list in Firebase
   function deleteItem(key) {

@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="shopping-list.css" />
   </head>
   <body>
+    <div id="loginpopup" class="popup">
+      <div class="popup-content">
+        <h2>Login</h2>
+        <input type="email" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+      </div>
+    </div>
     <h2 class="heading">Add to shopping list</h2>
 
     <div class="shopping-add-container">
@@ -17,8 +25,6 @@
         class="quantity-to-buy js-quantity-input"
         type="text"
       />
-      <input class="who-added js-who-added" placeholder="Added by" type="text">
-      <button class="add-to-shopping-list-button js-add-to-shopping-list-button">Add</button>
     </div>
     </div>
 
