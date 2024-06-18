@@ -88,6 +88,9 @@ function renderShoppingItem(key, shoppingItem) {
 
 // Render shopping list on page load
 document.addEventListener("DOMContentLoaded", () => {
+  // Show login popup on page load
+  showPopup();
+
   // Listen for changes to the shopping list in Firebase
   onChildAdded(shoppingListRef, (snapshot) => {
     const shoppingItem = snapshot.val();
