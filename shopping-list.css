@@ -3,6 +3,14 @@ body {
   background-color: rgb(135, 111, 81);
 }
 
+.login-heading {
+  display: flex;
+  position: fixed;
+  top: 10px;
+  left: 100px;
+  width: 40px;
+}
+
 .heading {
   display: flex;
   justify-content: center;

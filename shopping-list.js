@@ -36,6 +36,11 @@ function login() {
       const user = userCredential.user;
       // check to see if signed in successfully
       console.log("User logged in:", user.uid);
+      console.log("User display name", user.email);
+      const html = `Logged in as: ${user.email}`;
+      document
+        .querySelector(".js-login-heading")
+        .insertAdjacentHTML("beforeend", html);
 
       closePopup();
     })
@@ -73,7 +78,7 @@ function getCurrentUser() {
 // Render the entire shopping list
 function renderShoppingList() {
   // Clear the existing shopping list before rendering
-  document.querySelector(".js-shopping-list").innerHTML = "";
+  //document.querySelector(".js-shopping-list").innerHTML = "";
 }
 
 // Render a single shopping list item
@@ -101,6 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
   onChildAdded(shoppingListRef, (snapshot) => {
     const shoppingItem = snapshot.val();
     renderShoppingItem(snapshot.key, shoppingItem);
+    console.log(shoppingItem);
   });
   renderShoppingList();
 
@@ -123,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
       push(shoppingListRef, {
         item,
         quantity,
-        addedBy: user.displayName, // Use user's display name
+        addedBy: user.email, // Use user's display name
       });
 
       // Clear input fields after adding item
