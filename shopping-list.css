@@ -6,12 +6,23 @@ body {
 .login-status {
   display: flex;
   position: fixed;
-  top: 10px;
-  left: 100px;
-  width: 40px;
+  flex-direction: column;
+  top: 15px;
+  left: 20px;
+}
+
+.user-login-container {
+  display: flex;
+}
+
+.logout-button-container {
+  display: block;
+  margin-top: 6px;
 }
 
 .logout-button {
+  font-size: 14px;
+  padding: 4px 6px;
 }
 
 .heading {

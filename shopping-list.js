@@ -32,8 +32,13 @@ function updateUI(user) {
 
   if (user) {
     // User is logged in
-    loginStatusElement.innerHTML = `Logged in as: ${user.email}
-      <button class="js-logout-button logout-button">Logout</button>`;
+    loginStatusElement.innerHTML = `
+      <div class="user-login-container">
+      Logged in as: ${user.email}
+      </div>
+      <div class="logout-button-container">
+      <button class="js-logout-button logout-button">Logout</button>
+      </div>`;
     document
       .querySelector(".js-logout-button")
       .addEventListener("click", logout);
@@ -145,10 +150,10 @@ function renderShoppingList() {
   shoppingListElement.innerHTML = ""; // Clear existing items
 
   // Fetch and render each item from Firebase
-  onChildAdded(shoppingListRef, (snapshot) => {
-    const shoppingItem = snapshot.val();
-    renderShoppingItem(snapshot.key, shoppingItem); // Render each item
-  });
+  // onChildAdded(shoppingListRef, (snapshot) => {
+  //   const shoppingItem = snapshot.val();
+  //   renderShoppingItem(snapshot.key, shoppingItem); // Render each item
+  // });
 }
 
 // Render a single shopping list item
@@ -171,6 +176,7 @@ function renderShoppingItem(key, shoppingItem) {
 document.addEventListener("DOMContentLoaded", () => {
   // Check user status on page load
   checkUserStatus();
+  renderShoppingList();
 
   // Listen for changes to the shopping list in Firebase
   onChildAdded(shoppingListRef, (snapshot) => {
