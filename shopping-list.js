@@ -141,8 +141,14 @@ function getCurrentUser() {
 
 // Render the entire shopping list
 function renderShoppingList() {
-  // Clear the existing shopping list before rendering
-  //document.querySelector(".js-shopping-list").innerHTML = "";
+  const shoppingListElement = document.querySelector(".js-shopping-list");
+  shoppingListElement.innerHTML = ""; // Clear existing items
+
+  // Fetch and render each item from Firebase
+  onChildAdded(shoppingListRef, (snapshot) => {
+    const shoppingItem = snapshot.val();
+    renderShoppingItem(snapshot.key, shoppingItem); // Render each item
+  });
 }
 
 // Render a single shopping list item
@@ -172,7 +178,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderShoppingItem(snapshot.key, shoppingItem);
     console.log(shoppingItem);
   });
-  renderShoppingList();
 
   // Add event listener for the add button
   document
@@ -199,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const quantity = document.querySelector(".js-quantity-input").value;
 
       // Push the new item to the Firebase database, associating it with the user's UID
-      push(shoppingListRef, {
+      await push(shoppingListRef, {
         item,
         quantity,
         addedBy: user.email, // Use user's display name
@@ -208,9 +213,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // Clear input fields after adding item
       document.querySelector(".js-item-input").value = "";
       document.querySelector(".js-quantity-input").value = "";
-
-      // Update shopping list
-      renderShoppingList();
     } catch (error) {
       console.error("Error adding item:", error);
     }
