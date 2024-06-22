@@ -5,7 +5,7 @@ import {
   push,
   onChildAdded,
   remove,
-  child, // Import child function
+  child,
 } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-database.js";
 import {
   getAuth,
@@ -15,11 +15,11 @@ import {
 
 // Initialize Firebase with your project's Realtime Database URL
 const firebaseConfig = {
+  apiKey: "AIzaSyBpKsDGhucKO_QbNgjXG3vX1vuduYl8xy4",
   authDomain: "shopping-list-e939f.firebaseapp.com",
   databaseURL: "https://shopping-list-e939f-default-rtdb.firebaseio.com/",
   projectId: "shopping-list-e939f",
   storageBucket: "shopping-list-e939f.appspot.com",
-  // Add your other Firebase config keys here if needed
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
@@ -33,11 +33,10 @@ function login() {
   const auth = getAuth();
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      // Signed in successfully
       const user = userCredential.user;
+      // check to see if signed in successfully
       console.log("User logged in:", user.uid);
 
-      // Optionally close the login popup or redirect to another page
       closePopup();
     })
     .catch((error) => {
@@ -93,7 +92,7 @@ function renderShoppingItem(key, shoppingItem) {
     .insertAdjacentHTML("beforeend", html);
 }
 
-// Render shopping list on page load
+// Render login and shopping list on page load
 document.addEventListener("DOMContentLoaded", () => {
   // Show login popup on page load
   showPopup();
@@ -124,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
       push(shoppingListRef, {
         item,
         quantity,
-        addedBy: user.displayName, // Use user's display name (or adjust as per your user structure)
+        addedBy: user.displayName, // Use user's display name
       });
 
       // Clear input fields after adding item
