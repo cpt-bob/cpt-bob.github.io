@@ -3,12 +3,15 @@ body {
   background-color: rgb(135, 111, 81);
 }
 
-.login-heading {
+.login-status {
   display: flex;
   position: fixed;
   top: 10px;
   left: 100px;
   width: 40px;
+}
+
+.logout-button {
 }
 
 .heading {

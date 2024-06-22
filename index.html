@@ -7,15 +7,19 @@
     <link rel="stylesheet" href="shopping-list.css" />
   </head>
   <body>
-    <div id="loginPopup" class="popup">
-      <div class="popup-content">
-        <h2>Login</h2>
-        <input type="text" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
-        <button class="js-login-button login-button">Login</button>
-      </div>
+    <div class="login-status js-login-status">
+      <a href="#" class="js-login-link">Login</a>
     </div>
-    <div class="login-heading js-login-heading"></div>
+
+    <div id="loginPopup" style="display: none;">
+      <!-- Login popup content -->
+      <form id="loginForm">
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit" class="js-login-button">Login</button>
+      </form>
+    </div>
+    
     <h2 class="heading">Add to shopping list</h2>
 
     <div class="shopping-add-container">

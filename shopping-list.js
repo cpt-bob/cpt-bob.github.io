@@ -26,7 +26,29 @@ const firebaseApp = initializeApp(firebaseConfig);
 const database = getDatabase(firebaseApp);
 const shoppingListRef = ref(database, "shoppingList");
 
-function login() {
+// Function to update UI based on user login status
+function updateUI(user) {
+  const loginStatusElement = document.querySelector(".js-login-status");
+
+  if (user) {
+    // User is logged in
+    loginStatusElement.innerHTML = `Logged in as: ${user.email}
+      <button class="js-logout-button logout-button">Logout</button>`;
+    document
+      .querySelector(".js-logout-button")
+      .addEventListener("click", logout);
+  } else {
+    // User is not logged in
+    loginStatusElement.innerHTML = `<a href="#" class="js-login-link">Login</a>`;
+    document
+      .querySelector(".js-login-link")
+      .addEventListener("click", showPopup);
+  }
+}
+
+function login(event) {
+  event.preventDefault();
+
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
@@ -37,12 +59,8 @@ function login() {
       // check to see if signed in successfully
       console.log("User logged in:", user.uid);
       console.log("User display name", user.email);
-      const html = `Logged in as: ${user.email}`;
-      document
-        .querySelector(".js-login-heading")
-        .insertAdjacentHTML("beforeend", html);
-
       closePopup();
+      updateUI(user);
     })
     .catch((error) => {
       const errorCode = error.code;
@@ -52,13 +70,59 @@ function login() {
     });
 }
 
-function showPopup() {
+function logout() {
+  const auth = getAuth();
+  auth
+    .signOut()
+    .then(() => {
+      updateUI(null); // Update UI to show login link
+      console.log("User signed out");
+    })
+    .catch((error) => {
+      console.error("Error signing out:", error);
+    });
+}
+
+function showPopup(event) {
+  event.preventDefault();
   console.log("showing popup");
-  document.getElementById("loginPopup").style.display = "block";
+  const loginPopup = document.getElementById("loginPopup");
+  if (loginPopup) {
+    loginPopup.style.display = "block";
+  }
+
+  // Remove the login link while the popup is visible
+  const loginLink = document.querySelector(".js-login-link");
+  if (loginLink) {
+    loginLink.style.display = "none";
+  }
 }
 
 function closePopup() {
-  document.getElementById("loginPopup").style.display = "none";
+  const loginPopup = document.getElementById("loginPopup");
+  if (loginPopup) {
+    loginPopup.style.display = "none";
+
+    // Restore the login link after closing the popup
+    const loginLink = document.querySelector(".js-login-link");
+    if (loginLink) {
+      loginLink.style.display = "block";
+    }
+  }
+}
+
+// Function to check current user status on page load
+function checkUserStatus() {
+  const auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      // User is signed in
+      updateUI(user);
+    } else {
+      // No user is signed in
+      updateUI(null);
+    }
+  });
 }
 
 // Function to get the current user
@@ -99,8 +163,8 @@ function renderShoppingItem(key, shoppingItem) {
 
 // Render login and shopping list on page load
 document.addEventListener("DOMContentLoaded", () => {
-  // Show login popup on page load
-  showPopup();
+  // Check user status on page load
+  checkUserStatus();
 
   // Listen for changes to the shopping list in Firebase
   onChildAdded(shoppingListRef, (snapshot) => {
@@ -115,11 +179,20 @@ document.addEventListener("DOMContentLoaded", () => {
     .querySelector(".js-add-to-shopping-list-button")
     .addEventListener("click", addToShoppingList);
 
-  // Add event listener for login button
-  document.querySelector(".js-login-button").addEventListener("click", login);
+  // Event listener for login form submission
+  document.getElementById("loginForm").addEventListener("submit", login);
+
+  // Event listener to close popup when clicking outside of it
+  document.getElementById("loginPopup").addEventListener("click", (event) => {
+    if (event.target === document.getElementById("loginPopup")) {
+      closePopup();
+    }
+  });
 
   // Function to add an item to the shopping list in Firebase
-  async function addToShoppingList() {
+  async function addToShoppingList(event) {
+    event.preventDefault();
+
     try {
       const user = await getCurrentUser();
       const item = document.querySelector(".js-item-input").value;
@@ -135,6 +208,9 @@ document.addEventListener("DOMContentLoaded", () => {
       // Clear input fields after adding item
       document.querySelector(".js-item-input").value = "";
       document.querySelector(".js-quantity-input").value = "";
+
+      // Update shopping list
+      renderShoppingList();
     } catch (error) {
       console.error("Error adding item:", error);
     }
