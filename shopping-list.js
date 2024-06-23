@@ -42,6 +42,7 @@ function updateUI(user) {
     document
       .querySelector(".js-logout-button")
       .addEventListener("click", logout);
+    renderShoppingList();
   } else {
     // User is not logged in
     loginStatusElement.innerHTML = `<a href="#" class="js-login-link">Login</a>`;
@@ -150,10 +151,17 @@ function renderShoppingList() {
   shoppingListElement.innerHTML = ""; // Clear existing items
 
   // Fetch and render each item from Firebase
-  // onChildAdded(shoppingListRef, (snapshot) => {
-  //   const shoppingItem = snapshot.val();
-  //   renderShoppingItem(snapshot.key, shoppingItem); // Render each item
-  // });
+  onChildAdded(shoppingListRef, (snapshot) => {
+    const shoppingItem = snapshot.val();
+    const key = snapshot.key;
+    const existingItem = document.querySelector(
+      `.shopping-item[data-key="${key}"]`
+    );
+    // render the item only once
+    if (!existingItem) {
+      renderShoppingItem(snapshot.key, shoppingItem); // Render each item
+    }
+  });
 }
 
 // Render a single shopping list item
@@ -176,14 +184,16 @@ function renderShoppingItem(key, shoppingItem) {
 document.addEventListener("DOMContentLoaded", () => {
   // Check user status on page load
   checkUserStatus();
-  renderShoppingList();
+  // renderShoppingList();
 
   // Listen for changes to the shopping list in Firebase
-  onChildAdded(shoppingListRef, (snapshot) => {
-    const shoppingItem = snapshot.val();
-    renderShoppingItem(snapshot.key, shoppingItem);
-    console.log(shoppingItem);
-  });
+  // onChildAdded(shoppingListRef, (snapshot) => {
+  //   const shoppingItem = snapshot.val();
+  //   renderShoppingItem(snapshot.key, shoppingItem);
+  //   console.log(shoppingItem);
+  // });
+
+  //renderShoppingList();
 
   // Add event listener for the add button
   document
