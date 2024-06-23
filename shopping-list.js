@@ -199,9 +199,9 @@ async function renderShoppingItem(key, shoppingItem) {
         const html = `
           <div class="shopping-item" data-key="${key}">
             <input type="checkbox" class="chk js-check-box"/>
-            <div>${item}</div>
-            <div>${quantity}</div>
-            <div>${username}</div>
+            <div class="item">${item}</div>
+            <div class="quantity">${quantity}</div>
+            <div class="username">${username}</div>
           </div>
         `;
 
