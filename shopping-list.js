@@ -201,7 +201,7 @@ async function renderShoppingItem(key, shoppingItem) {
             <input type="checkbox" class="chk js-check-box"/>
             <div>${item}</div>
             <div>${quantity}</div>
-            <div>Added by ${username}</div>
+            <div>${username}</div>
           </div>
         `;
 
