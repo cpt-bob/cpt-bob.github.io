@@ -185,33 +185,39 @@ function renderShoppingList() {
   });
 }
 
-// Render a single shopping list item
+// render shopping item
 async function renderShoppingItem(key, shoppingItem) {
   const { item, quantity, addedBy } = shoppingItem;
-  // get username from firestore database
+
   try {
     const userDoc = await getDoc(doc(firestore, "users", addedBy));
+
     if (userDoc.exists()) {
       const userData = userDoc.data();
       const username = userData.user;
+      const existingItem = document.querySelector(
+        `.shopping-item[data-key="${key}"]`
+      );
 
-      const html = `
-        <div class="shopping-item" data-key="${key}">
-          <input type="checkbox" class="chk js-check-box"/>
-          <div>${item}</div>
-          <div>${quantity}</div>
-          <div>Added by ${username}</div>
-        </div>
-      `;
+      if (!existingItem) {
+        const html = `
+          <div class="shopping-item" data-key="${key}">
+            <input type="checkbox" class="chk js-check-box"/>
+            <div>${item}</div>
+            <div>${quantity}</div>
+            <div>Added by ${username}</div>
+          </div>
+        `;
 
-      document
-        .querySelector(".js-shopping-list")
-        .insertAdjacentHTML("beforeend", html);
+        document
+          .querySelector(".js-shopping-list")
+          .insertAdjacentHTML("beforeend", html);
+      }
     } else {
       console.error(`User document not found for UID: ${addedBy}`);
     }
   } catch (error) {
-    console.log("Error fetching the username", error);
+    console.error("Error fetching the username", error);
   }
 }
 
