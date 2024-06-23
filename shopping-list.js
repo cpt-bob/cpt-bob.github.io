@@ -84,9 +84,6 @@ function login(event) {
       } catch (error) {
         console.error("Error fetching the username:", error);
       }
-      // check to see if signed in successfully
-      console.log("User logged in:", user.uid);
-      console.log("User display name", username);
       closePopup();
       updateUI({ ...user, username });
     })
@@ -104,7 +101,6 @@ function logout() {
     .signOut()
     .then(() => {
       updateUI(null); // Update UI to show login link
-      console.log("User signed out");
     })
     .catch((error) => {
       console.error("Error signing out:", error);
