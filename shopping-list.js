@@ -12,6 +12,14 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+} from "https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js";
 
 // Initialize Firebase with your project's Realtime Database URL
 const firebaseConfig = {
@@ -23,6 +31,7 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
+const firestore = getFirestore(firebaseApp);
 const database = getDatabase(firebaseApp);
 const shoppingListRef = ref(database, "shoppingList");
 
@@ -32,9 +41,11 @@ function updateUI(user) {
 
   if (user) {
     // User is logged in
+    const displayName = user.username || user.email; //backup email login name
+
     loginStatusElement.innerHTML = `
       <div class="user-login-container">
-      Logged in as: ${user.email}
+      Logged in as: ${displayName}
       </div>
       <div class="logout-button-container">
       <button class="js-logout-button logout-button">Logout</button>
@@ -60,13 +71,24 @@ function login(event) {
 
   const auth = getAuth();
   signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
+    .then(async (userCredential) => {
       const user = userCredential.user;
+      // get username from the firestore database
+      let username = user.email; //backup in case the fetch from firestore fails
+      try {
+        const userDoc = await getDoc(doc(firestore, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          username = userData.user;
+        }
+      } catch (error) {
+        console.error("Error fetching the username:", error);
+      }
       // check to see if signed in successfully
       console.log("User logged in:", user.uid);
-      console.log("User display name", user.email);
+      console.log("User display name", username);
       closePopup();
-      updateUI(user);
+      updateUI({ ...user, username });
     })
     .catch((error) => {
       const errorCode = error.code;
@@ -91,7 +113,6 @@ function logout() {
 
 function showPopup(event) {
   event.preventDefault();
-  console.log("showing popup");
   const loginPopup = document.getElementById("loginPopup");
   if (loginPopup) {
     loginPopup.style.display = "block";
@@ -159,25 +180,39 @@ function renderShoppingList() {
     );
     // render the item only once
     if (!existingItem) {
-      renderShoppingItem(snapshot.key, shoppingItem); // Render each item
+      renderShoppingItem(snapshot.key, shoppingItem);
     }
   });
 }
 
 // Render a single shopping list item
-function renderShoppingItem(key, shoppingItem) {
+async function renderShoppingItem(key, shoppingItem) {
   const { item, quantity, addedBy } = shoppingItem;
-  const html = `
-    <div class="shopping-item" data-key="${key}">
-      <input type="checkbox" class="chk js-check-box"/>
-      <div>${item}</div>
-      <div>${quantity}</div>
-      <div>Added by ${addedBy}</div>
-    </div>
-  `;
-  document
-    .querySelector(".js-shopping-list")
-    .insertAdjacentHTML("beforeend", html);
+  // get username from firestore database
+  try {
+    const userDoc = await getDoc(doc(firestore, "users", addedBy));
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      const username = userData.user;
+
+      const html = `
+        <div class="shopping-item" data-key="${key}">
+          <input type="checkbox" class="chk js-check-box"/>
+          <div>${item}</div>
+          <div>${quantity}</div>
+          <div>Added by ${username}</div>
+        </div>
+      `;
+
+      document
+        .querySelector(".js-shopping-list")
+        .insertAdjacentHTML("beforeend", html);
+    } else {
+      console.error(`User document not found for UID: ${addedBy}`);
+    }
+  } catch (error) {
+    console.log("Error fetching the username", error);
+  }
 }
 
 // Render login and shopping list on page load
@@ -223,7 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
       await push(shoppingListRef, {
         item,
         quantity,
-        addedBy: user.email, // Use user's display name
+        addedBy: user.uid,
       });
 
       // Clear input fields after adding item
