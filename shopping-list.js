@@ -21,7 +21,7 @@ import {
   updateDoc,
 } from "https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore.js";
 
-// Initialize Firebase with your project's Realtime Database URL
+// Initialize Firebase with Realtime Database URL
 const firebaseConfig = {
   apiKey: "AIzaSyBpKsDGhucKO_QbNgjXG3vX1vuduYl8xy4",
   authDomain: "shopping-list-e939f.firebaseapp.com",
@@ -40,7 +40,6 @@ function updateUI(user) {
   const loginStatusElement = document.querySelector(".js-login-status");
 
   if (user) {
-    // User is logged in
     const displayName = user.username || user.email; //backup email login name
 
     loginStatusElement.innerHTML = `
@@ -55,7 +54,6 @@ function updateUI(user) {
       .addEventListener("click", logout);
     renderShoppingList();
   } else {
-    // User is not logged in
     loginStatusElement.innerHTML = `<a href="#" class="js-login-link">Login</a>`;
     document
       .querySelector(".js-login-link")
@@ -139,10 +137,8 @@ function checkUserStatus() {
   const auth = getAuth();
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      // User is signed in
       updateUI(user);
     } else {
-      // No user is signed in
       updateUI(null);
     }
   });
@@ -221,18 +217,7 @@ async function renderShoppingItem(key, shoppingItem) {
 document.addEventListener("DOMContentLoaded", () => {
   // Check user status on page load
   checkUserStatus();
-  // renderShoppingList();
 
-  // Listen for changes to the shopping list in Firebase
-  // onChildAdded(shoppingListRef, (snapshot) => {
-  //   const shoppingItem = snapshot.val();
-  //   renderShoppingItem(snapshot.key, shoppingItem);
-  //   console.log(shoppingItem);
-  // });
-
-  //renderShoppingList();
-
-  // Add event listener for the add button
   document
     .querySelector(".js-add-to-shopping-list-button")
     .addEventListener("click", addToShoppingList);

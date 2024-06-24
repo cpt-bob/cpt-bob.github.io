@@ -60,14 +60,6 @@ body {
   justify-content: center;
 }
 
-/* .shopping-list-grid {
-  display: grid;
-  grid-template-columns: 50px 150px 150px 150px;
-  column-gap: 10px;
-  row-gap: 10px;
-  align-items: center;
-} */
-
 .shopping-item {
   display: grid;
   grid-template-columns: 50px 200px 50px 100px;
@@ -80,7 +72,7 @@ body {
 }
 
 /* This was the old popup sign-in.  Will leave this here in case I decide to go back */
-.popup {
+/* .popup {
   display: none;
   position: fixed;
   top: 50%;
@@ -98,15 +90,11 @@ body {
   padding: 20px;
   border: 1px solid #888;
   width: 80%;
-}
+} */
 
-.login-button {
+/* .login-button {
   margin-top: 10px;
   cursor: pointer;
-}
-
-/* .shopping-item > * {
-  margin-right: 50px;
 } */
 
 @media only screen and (max-width: 600px) {
