@@ -250,7 +250,7 @@ li.checked .close {
 
   ul li .item {
     flex: 1;
-    justify-self: flex-start;
+    text-align: left;
   }
 
   ul li .quantity {
@@ -258,7 +258,7 @@ li.checked .close {
     min-width: 40px;
     text-align: right;
     margin-left: auto;
-    margin-right: 20px;
+    margin-right: 16px;
   }
 
   ul li .user {
