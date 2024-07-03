@@ -1,44 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My shopping list</title>
-    <link rel="stylesheet" href="shopping-list.css" />
-  </head>
-  <body>
-    <div class="login-status js-login-status">
-      <a href="#" class="js-login-link">Login</a>
-    </div>
 
-    <div id="loginPopup" style="display: none;">
-      <!-- Login popup content -->
-      <form id="loginForm">
-        <input type="email" id="email" placeholder="Email" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <button type="submit" class="js-login-button">Login</button>
-      </form>
-    </div>
-    
-    <h2 class="heading">Add to shopping list</h2>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Family Shopping List</title>
+  <link rel="shortcut icon" href="/icons/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playwrite+US+Modern:wght@100..400&display=swap"
+    rel="stylesheet" />
+</head>
 
-    <div class="shopping-add-container">
-    <div class="shopping-add-grid">
-      <input id="input1" placeholder="Item to buy" class="item-to-buy js-item-input" type="text" />
-      <input
-        placeholder="How many to buy"
-        class="quantity-to-buy js-quantity-input"
-        type="text"
-      />
-      <button class="add-to-shopping-list-button js-add-to-shopping-list-button">Add</button>
+<body>
+  <div id="login-box" class="login-box">
+    <div class="modal">
+      <h3 class="login-title">Login</h3>
+      <div class="modal-input-container">
+        <div class="input-container">
+          <input id="email" type="email" autocomplete="email address" placeholder="Email Address" />
+        </div>
+        <div class="input-container">
+          <input id="password" type="password" placeholder="Password" />
+        </div>
+        <div class="button-container">
+          <button class="js-login-button">Login</button>
+        </div>
+      </div>
     </div>
-    </div>
+  </div>
+  <div class="container">
+    <div class="shopping-app">
+      <div class="user-login-container">
+        <p id="login-link" class="login-link js-login-link">Login</p>
+        <p id="user-name" class="user-name js-user-name">
+          <!-- user name will go here -->
+        </p>
+        <p id="logout-link" class="logout-link js-logout-link">Logout</p>
+      </div>
+      <h2>
+        Shopping List
+        <img src="/icons/shopping-list.png" alt="" />
+      </h2>
+      <div class="row">
+        <div class="input-container">
+          <input type="text" id="item-box" placeholder="Item to buy" />
+        </div>
+        <div class="input-container">
+          <input type="text" id="quantity-box" placeholder="Quantity to buy" />
+        </div>
+        <div class="button-container">
+          <button class="js-add-button">Add</button>
+        </div>
+      </div>
 
+      <ul class="list-container" id="list-container">
+        <!-- List items will go here -->
+      </ul>
     </div>
-    <h2 class="shopping-list-header">Shopping List</h2>
-    <div class="shopping-list-container">
-      <div class="shopping-list-grid js-shopping-list"></div>
-    </div>
-    <script type="module" src="shopping-list.js"></script>
-  </body>
+  </div>
+  <script type="module" src="script.js"></script>
+</body>
+<footer>
+  <a href="https://www.flaticon.com/free-icons/checklist" title="checklist icons">Icons created by Freepik -
+    Flaticon</a>
+</footer>
+
 </html>
