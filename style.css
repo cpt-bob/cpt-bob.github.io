@@ -242,29 +242,17 @@ li.checked .close {
   }
 
   ul li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
+    display: grid;
+    grid-template-columns: auto 6fr 1fr auto;
+    gap: 10px
   }
 
-  ul li .item {
-    flex: 1;
-    text-align: left;
+  ul li.checked {
+    grid-template-columns: auto 6fr auto 1fr auto;
   }
 
-  ul li .quantity {
-    flex: 0 0 auto;
-    min-width: 40px;
-    text-align: right;
-    margin-left: auto;
-    margin-right: 16px;
-  }
-
-  ul li .user {
-    flex: 0 0 auto;
-    min-width: 40px;
-    text-align: right;
-    margin-left: auto;
+  ul li.checked .quantity,
+  ul li.checked .user {
+    padding: auto;
   }
 }
