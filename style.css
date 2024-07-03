@@ -255,4 +255,10 @@ li.checked .close {
   ul li.checked .user {
     padding: auto;
   }
+
+  footer {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 }
