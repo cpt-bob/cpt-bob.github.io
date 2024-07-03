@@ -40,7 +40,7 @@ footer a {
 .modal {
   background-color: lightslategray;
   margin: 15% auto;
-  width: 400px;
+  width: 450px;
   padding: 15px;
   border-radius: 10px;
   z-index: 1000;
@@ -233,4 +233,11 @@ li.checked .close {
   color: aliceblue;
   text-align: center;
   margin-top: 20px;
+}
+
+@media screen and (max-width: 600px) {
+  .modal {
+    width: 100%;
+    margin: 10% auto;
+  }
 }
