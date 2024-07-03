@@ -240,4 +240,31 @@ li.checked .close {
     width: 100%;
     margin: 10% auto;
   }
+
+  ul li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+  }
+
+  ul li .item {
+    flex: 1;
+    justify-self: flex-start;
+  }
+
+  ul li .quantity {
+    flex: 0 0 auto;
+    min-width: 40px;
+    text-align: right;
+    margin-left: auto;
+    margin-right: 20px;
+  }
+
+  ul li .user {
+    flex: 0 0 auto;
+    min-width: 40px;
+    text-align: right;
+    margin-left: auto;
+  }
 }
