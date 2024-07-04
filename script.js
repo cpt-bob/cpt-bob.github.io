@@ -118,12 +118,12 @@ const logout = () => {
 
   logout.classList.toggle("show");
   login.classList.toggle("hide");
-  listContainer.innerHTML = "";
 
   const auth = getAuth();
   auth
     .signOut()
     .then(() => {
+      listContainer.innerHTML = "";
       alert("User successfully signed out");
     })
     .catch((error) => {
