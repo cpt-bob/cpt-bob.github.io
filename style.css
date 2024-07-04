@@ -235,6 +235,11 @@ li.checked .close {
   margin-top: 20px;
 }
 
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 50px lightgray inset;
+  border-radius: 30px;
+}
+
 @media screen and (max-width: 600px) {
   .modal {
     width: 100%;
