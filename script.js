@@ -65,12 +65,10 @@ const login = () => {
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const userId = userCredential.user.uid; // Get the user's UID
-      console.log("User UID:", userId); // Verify UID matches user uid
 
       getUserName(userId)
         .then((userName) => {
           if (userName) {
-            console.log(userName); // check userName works correctly
             handleLogin(userName);
             renderList();
           } else {
@@ -96,7 +94,6 @@ const handleLogin = (userName) => {
   const login = document.getElementById("login-link");
   const logout = document.getElementById("logout-link");
 
-  console.log("Logged in as:", userName); // check userName works
   user.innerHTML = `${userName}`;
   user.classList.add("show");
 
@@ -126,7 +123,7 @@ const logout = () => {
   auth
     .signOut()
     .then(() => {
-      console.log("User successfully signed out");
+      alert("User successfully signed out");
     })
     .catch((error) => {
       console.error("Error signing out:", error.message);
@@ -264,7 +261,6 @@ listContainer.addEventListener(
 const removeItem = async (itemId) => {
   try {
     await remove(ref(database, `items/${itemId}`));
-    console.log("Item removed from the database successfully");
   } catch (error) {
     console.error("Error removing item from the database:", error);
   }
@@ -283,7 +279,6 @@ const saveData = async (item, quantity, userName) => {
       user: userName,
       itemId: newItemRef,
     });
-    console.log("Data saved successfully");
     return newItemRef;
   } catch (error) {
     console.error("Data not saved successfully. Error:", error);
