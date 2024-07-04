@@ -124,6 +124,8 @@ const logout = () => {
     .signOut()
     .then(() => {
       listContainer.innerHTML = "";
+      itemBox.value = "";
+      quantityBox.value = "";
       alert("User successfully signed out");
     })
     .catch((error) => {
