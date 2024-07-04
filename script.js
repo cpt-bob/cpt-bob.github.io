@@ -118,6 +118,7 @@ const logout = () => {
 
   logout.classList.toggle("show");
   login.classList.toggle("hide");
+  listContainer.innerHTML = "";
 
   const auth = getAuth();
   auth
