@@ -1,48 +1,9 @@
 <script lang="ts">
-  import { db, auth, firestore } from "$lib/firebase";
+  import { db, auth, firestore, authUser } from "$lib/firebase";
   import { ref, onValue, push, set, remove } from "firebase/database";
   import { signInWithEmailAndPassword } from "firebase/auth";
   import { onMount } from "svelte";
   import { doc, getDoc } from "firebase/firestore";
-
-  interface FirebaseUser {
-    uid: string;
-    email: string | null;
-    displayName?: string;
-  }
-
-  let loading = false;
-  let selectedItems: string[] = [];
-  let showDeleteAll = false;
-  let currentUser: FirebaseUser | null = null;
-  let showConfirmDelete = false;
-  let showLogin = false;
-  let deleting = false;
-  let adding = false;
-  let error = "";
-
-  let items: Record<string, ShoppingItem> = {};
-  let itemsLoading = true;
-
-  onMount(() => {
-    const itemsRef = ref(db, "items");
-    const unsubscribe = onValue(itemsRef, (snapshot) => {
-      const newItems = snapshot.val() || {};
-      items = Object.assign({}, newItems);
-      itemsLoading = false;
-
-      items = items;
-    });
-
-    return () => unsubscribe();
-  });
-
-  let email = "";
-  let password = "";
-  let userName = "";
-  let loggedIn = false;
-  let itemInput = "";
-  let quantityInput = "";
 
   interface ShoppingItem {
     itemId: string;
@@ -52,6 +13,47 @@
     checked?: boolean;
   }
 
+  interface UserDoc {
+    user: string;
+  }
+
+  let loading = false;
+  let items: Record<string, ShoppingItem> = {};
+  let selectedItems: string[] = [];
+  let showDeleteAll = false;
+  let showConfirmDelete = false;
+  let showLogin = false;
+  let deleting = false;
+  let itemsLoading = true;
+  let error = "";
+  let lastUid: string | null = null;
+  let authReady = false;
+  let showEditModal = false;
+  let editingItem: ShoppingItem | null = null;
+
+  onMount(() => {
+    const itemsRef = ref(db, "items");
+    const unsubscribe = onValue(itemsRef, (snapshot) => {
+      items = { ...(snapshot.val() || {}) };
+      itemsLoading = false;
+    });
+
+    return () => unsubscribe();
+  });
+
+  let email = "";
+  let password = "";
+  let userName = "";
+  let itemInput = "";
+  let quantityInput = "";
+  let displayName = "";
+
+  $: loggedIn = !!$authUser;
+
+  $: displayName = $authUser
+    ? $authUser.displayName || $authUser.email || "User"
+    : "";
+
   const toggleItem = async (itemId: string) => {
     const item = items[itemId];
     if (!item) return;
@@ -59,18 +61,21 @@
     const itemRef = ref(db, `items/${itemId}`);
     await set(itemRef, { ...item, checked: !item.checked });
   };
-  $: showDeleteAll = selectedItems.length > 0;
 
   const addItem = async () => {
-    if (!itemInput || !quantityInput || !currentUser) return;
+    if (!itemInput.trim() || !quantityInput.trim()) {
+      alert("Item name and quantity cannot be empty.");
+      return;
+    }
 
     loading = true;
+    error = "";
     try {
       const newRef = push(ref(db, "items"));
       await set(newRef, {
         itemId: newRef.key,
-        item: itemInput,
-        quantity: quantityInput,
+        item: itemInput.trim(),
+        quantity: quantityInput.trim(),
         user: userName,
         checked: false,
       });
@@ -87,22 +92,48 @@
     }
   };
 
-  const getUserName = async (uid: string) => {
+  const getUserName = async (uid: string): Promise<string> => {
     const userDocRef = doc(firestore, "users", uid);
 
-    try {
-      const userDocSnapshot = await getDoc(userDocRef);
-      if (userDocSnapshot.exists()) {
-        const userData = userDocSnapshot.data();
-        return userData.user;
-      } else {
-        throw new Error("User document does not exist");
-      }
-    } catch (error) {
-      console.error("Error fetching user document:", error);
-      throw error;
+    const snap = await getDoc(userDocRef);
+
+    if (!snap.exists()) {
+      throw new Error("User document does not exist");
     }
+
+    const data = snap.data() as UserDoc;
+
+    if (!data.user) {
+      throw new Error("User name missing in user document");
+    }
+
+    return data.user;
   };
+
+  $: if ($authUser !== undefined) {
+    authReady = true;
+  }
+
+  $: if (authReady && $authUser) {
+    if ($authUser.uid !== lastUid) {
+      lastUid = $authUser.uid;
+    }
+
+    getUserName($authUser.uid)
+      .then((name) => {
+        userName = name;
+      })
+      .catch(() => {
+        userName = $authUser.displayName || $authUser.email || "User";
+      });
+  } else {
+    userName = "";
+  }
+
+  $: if (authReady && $authUser === null) {
+    lastUid = null;
+    userName = "";
+  }
 
   const login = async () => {
     if (!email || !password) return;
@@ -114,14 +145,6 @@
         email,
         password,
       );
-      currentUser = {
-        uid: credential.user.uid,
-        email: credential.user.email,
-        displayName: credential.user.displayName,
-      } as FirebaseUser;
-
-      userName = await getUserName(credential.user.uid);
-      loggedIn = true;
       showLogin = false;
     } catch (error: any) {
       alert("Login failed: " + error.message);
@@ -132,8 +155,6 @@
 
   const logout = async () => {
     await auth.signOut();
-    loggedIn = false;
-    currentUser = null;
     userName = "";
   };
 
@@ -155,12 +176,91 @@
   $: selectedItems = Object.values(items)
     .filter((item) => item.checked)
     .map((item) => item.itemId);
+  $: singleSelectedItem =
+    selectedItems.length === 1
+      ? (Object.values(items).find((i) => i.itemId === selectedItems[0]) ??
+        null)
+      : null;
+  $: showEditButton = singleSelectedItem !== null;
   $: showDeleteAll = selectedItems.length > 0;
 
+  const startEdit = () => {
+    if (!singleSelectedItem) return;
+    editingItem = singleSelectedItem;
+    showEditModal = true;
+  };
+
+  const saveEdit = async () => {
+    if (!editingItem || !editingItem.itemId) return;
+
+    if (!editingItem.item || !editingItem.quantity) {
+      alert("Item name and quantity cannot be empty.");
+      return;
+    }
+
+    const itemRef = ref(db, `items/${editingItem.itemId}`);
+    error = "";
+    try {
+      await set(itemRef, {
+        itemId: editingItem.itemId,
+        item: editingItem.item.trim(),
+        quantity: editingItem.quantity.trim(),
+        user: editingItem.user,
+        checked: false,
+      });
+    } catch (err) {
+      console.error("Edit failed:", err);
+    } finally {
+      showEditModal = false;
+      editingItem = null;
+    }
+  };
+
+  const cancelEdit = () => {
+    showEditModal = false;
+    editingItem = null;
+  };
+
   function handleKeydown(event: KeyboardEvent) {
-    if (event.key === "Enter" && !loading) {
-      event.preventDefault();
-      addItem();
+    const target = event.currentTarget as HTMLInputElement;
+
+    // Login modal event
+    if (!loggedIn && target.id === "email-input") {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        (
+          document.getElementById("password-input") as HTMLInputElement
+        )?.focus();
+      }
+    }
+
+    if (!loggedIn && target.id === "password-input" && email && password) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        login();
+      }
+    }
+
+    // shopping list event
+    if (loggedIn && target.id === "item-input") {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        (
+          document.getElementById("quantity-input") as HTMLInputElement
+        )?.focus();
+      }
+    }
+
+    if (
+      loggedIn &&
+      target.id === "quantity-input" &&
+      itemInput &&
+      quantityInput
+    ) {
+      if (event.key === "Enter" && !loading) {
+        event.preventDefault();
+        addItem();
+      }
     }
   }
 </script>
@@ -187,6 +287,7 @@
           bind:value={email}
           type="email"
           placeholder="Email Address"
+          on:keydown={handleKeydown}
         />
       </div>
       <div class="input-container">
@@ -195,6 +296,7 @@
           bind:value={password}
           type="password"
           placeholder="Password"
+          on:keydown={handleKeydown}
         />
       </div>
       <div class="button-container">
@@ -249,8 +351,8 @@
           <button
             class="js-add-button"
             on:click={addItem}
-            disabled={adding || !itemInput || !quantityInput}
-            >{adding ? "Adding..." : "Add"}</button
+            disabled={loading || !itemInput.trim() || !quantityInput.trim()}
+            >{loading ? "Adding..." : "Add"}</button
           >
         </div>
       </div>
@@ -274,6 +376,11 @@
       </ul>
       {#if showDeleteAll && !itemsLoading}
         <div class="delete-all-container">
+          {#if showEditButton}
+            <button class="edit-btn" on:click={startEdit}
+              >Edit selected item</button
+            >
+          {/if}
           <button
             class="delete-all-btn"
             on:click={() => (showConfirmDelete = true)}
@@ -307,6 +414,43 @@
         <button class="confirm-no" on:click={() => (showConfirmDelete = false)}
           >Cancel</button
         >
+      </div>
+    </div>
+  </div>
+{/if}
+
+{#if showEditModal && editingItem}
+  <div class="edit-overlay" on:click={cancelEdit}>
+    <div class="edit-modal" on:click|stopPropagation>
+      <h3>Edit Item</h3>
+
+      <div class="input-container">
+        <input
+          type="text"
+          bind:value={editingItem.item}
+          placeholder="Item name"
+          autofocus
+        />
+      </div>
+
+      <div class="input-container">
+        <input
+          type="text"
+          bind:value={editingItem.quantity}
+          placeholder="Quantity"
+        />
+      </div>
+
+      <div class="confirm-buttons">
+        <button
+          class="confirm-yes"
+          on:click={saveEdit}
+          disabled={loading ||
+            !editingItem?.item?.trim() ||
+            !editingItem?.quantity?.trim()}
+          >{loading ? "Saving..." : "Save"}</button
+        >
+        <button class="confirm-no" on:click={cancelEdit}>Cancel</button>
       </div>
     </div>
   </div>
@@ -515,7 +659,9 @@
 
   .delete-all-container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
     margin: 20px 0;
     padding: 0 30px;
   }
@@ -523,7 +669,7 @@
   .delete-all-btn {
     background: darkred;
     color: white;
-    padding: 12px 24px;
+    padding: 10px 20px;
     border-radius: 40px;
     font-size: 16px;
     cursor: pointer;
@@ -653,5 +799,55 @@
     .delete-all-container {
       padding: 0 15px;
     }
+  }
+  .edit-btn {
+    background: #0066cc;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 12px;
+    font-family: inherit;
+    font-weight: 100;
+    transition: background 0.2s;
+  }
+
+  .edit-btn:hover {
+    background: #0055aa;
+  }
+
+  .edit-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .edit-modal {
+    background: linear-gradient(135deg, #5b548a, #301934);
+    margin: 20px;
+    padding: 30px;
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .edit-modal h3 {
+    margin-bottom: 20px;
+    font-size: 24px;
+  }
+
+  .edit-modal .input-container {
+    margin-bottom: 16px;
   }
 </style>

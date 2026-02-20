@@ -1,7 +1,9 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { writable, type Writable } from "svelte/store";
+import type { User } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBpKsDGhucKO_QbNgjXG3vX1vuduYl8xy4",
@@ -16,3 +18,8 @@ const app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
 export const auth = getAuth(app);
 export const firestore = getFirestore(app);
+
+export const authUser = writable<User | null | undefined>(undefined);
+onAuthStateChanged(auth, (user) => {
+  authUser.set(user);
+});
