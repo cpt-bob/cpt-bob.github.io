@@ -1,23 +1,13 @@
-import {
-  computed,
-  DestroyRef,
-  inject,
-  Service,
-  signal,
-  effect,
-  EnvironmentInjector,
-  runInInjectionContext,
-} from '@angular/core';
-import { Database, onValue, push, ref, remove, set } from '@angular/fire/database';
+import { computed, DestroyRef, inject, Service, signal, effect } from '@angular/core';
+import { onValue, push, ref, remove, set, getDatabase } from 'firebase/database';
 import { AuthService } from './auth-service';
 import { ShoppingItem } from '../models/model';
 
 @Service()
 export class ShoppingListService {
-  private db = inject(Database);
+  private db = getDatabase();
   private auth = inject(AuthService);
   private destroyRef = inject(DestroyRef);
-  private injector = inject(EnvironmentInjector);
   private unsubItems?: () => void;
 
   readonly items = signal<Record<string, ShoppingItem>>({});
@@ -70,21 +60,19 @@ export class ShoppingListService {
     this.unsubItems = undefined;
     this.loading.set(true);
 
-    runInInjectionContext(this.injector, () => {
-      const itemsRef = ref(this.db, 'items');
+    const itemsRef = ref(this.db, 'items');
 
-      this.unsubItems = onValue(
-        itemsRef,
-        (snap) => {
-          this.items.set({ ...(snap.val() || {}) });
-          this.loading.set(false);
-        },
-        (err) => {
-          console.error(err);
-          this.loading.set(false);
-        },
-      );
-    });
+    this.unsubItems = onValue(
+      itemsRef,
+      (snap) => {
+        this.items.set({ ...(snap.val() || {}) });
+        this.loading.set(false);
+      },
+      (err) => {
+        console.error(err);
+        this.loading.set(false);
+      },
+    );
   }
 
   async addItem(store = '', item: string, quantity: string): Promise<void> {
@@ -95,15 +83,13 @@ export class ShoppingListService {
     this.isAdding.set(true);
     try {
       const newRef = push(ref(this.db, 'items'));
-      await runInInjectionContext(this.injector, () => {
-        return set(newRef, {
-          itemId: newRef.key,
-          item: item.trim(),
-          quantity: quantity.trim(),
-          store: store.trim(),
-          user: this.auth.userName(),
-          checked: false,
-        });
+      await set(newRef, {
+        itemId: newRef.key,
+        item: item.trim(),
+        quantity: quantity.trim(),
+        store: store.trim(),
+        user: this.auth.userName(),
+        checked: false,
       });
     } finally {
       this.isAdding.set(false);
@@ -114,11 +100,9 @@ export class ShoppingListService {
     const item = this.items()[itemId];
     if (!item) return;
 
-    await runInInjectionContext(this.injector, () => {
-      return set(ref(this.db, `items/${itemId}`), {
-        ...item,
-        checked: !item.checked,
-      });
+    await set(ref(this.db, `items/${itemId}`), {
+      ...item,
+      checked: !item.checked,
     });
   }
 
@@ -127,13 +111,11 @@ export class ShoppingListService {
       throw new Error('Item name and quantity cannot be empty.');
     }
 
-    await runInInjectionContext(this.injector, () => {
-      return set(ref(this.db, `items/${item.itemId}`), {
-        ...item,
-        item: item.item.trim(),
-        quantity: item.quantity.trim(),
-        checked: false,
-      });
+    await set(ref(this.db, `items/${item.itemId}`), {
+      ...item,
+      item: item.item.trim(),
+      quantity: item.quantity.trim(),
+      checked: false,
     });
   }
 
@@ -143,9 +125,7 @@ export class ShoppingListService {
 
     this.isDeleting.set(true);
     try {
-      await runInInjectionContext(this.injector, () => {
-        return Promise.all(ids.map((id) => remove(ref(this.db, `items/${id}`))));
-      });
+      await Promise.all(ids.map((id) => remove(ref(this.db, `items/${id}`))));
     } finally {
       this.isDeleting.set(false);
     }

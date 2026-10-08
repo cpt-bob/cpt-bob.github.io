@@ -6,13 +6,9 @@ import {
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-// import { provideClientHydration } from '@angular/platform-browser';
 
 // Import Angular Firebase modules and functions
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { getAuth, provideAuth } from '@angular/fire/auth';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { getDatabase, provideDatabase } from '@angular/fire/database';
+import { initializeApp } from 'firebase/app';
 
 // Firebase configuration object
 const firebaseConfig = {
@@ -23,15 +19,12 @@ const firebaseConfig = {
   storageBucket: 'shopping-list-e939f.appspot.com',
 };
 
+initializeApp(firebaseConfig);
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    // provideClientHydration(),
-    provideFirebaseApp(() => initializeApp(firebaseConfig)),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-    provideDatabase(() => getDatabase()),
   ],
 };
