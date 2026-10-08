@@ -1,29 +1,48 @@
 {
-  "name": "shopping-list",
-  "private": true,
-  "version": "0.0.1",
-  "type": "module",
+  "name": "angular-shopping-list",
+  "version": "0.0.0",
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "preview": "vite preview",
-    "prepare": "svelte-kit sync || echo ''",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-    "deploy": "npm run build && gh-pages -d build"
+    "ng": "ng",
+    "start": "ng serve",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "serve:ssr:angular-shopping-list": "node dist/angular-shopping-list/server/server.mjs",
+    "build": "ng build --configuration production --base-href=/",
+    "deploy": "npm run build && gh-pages -d dist/angular-shopping-list/browser"
+  },
+  "private": true,
+  "packageManager": "npm@12.0.1",
+  "dependencies": {
+    "@angular/common": "^22.0.0",
+    "@angular/compiler": "^22.0.0",
+    "@angular/core": "^22.0.0",
+    "@angular/fire": "^21.0.0-rc.1",
+    "@angular/forms": "^22.0.0",
+    "@angular/platform-browser": "^22.0.0",
+    "@angular/platform-server": "^22.0.0",
+    "@angular/router": "^22.0.0",
+    "@angular/ssr": "^22.0.6",
+    "@fortawesome/angular-fontawesome": "^5.1.0",
+    "@fortawesome/fontawesome-free": "^7.3.1",
+    "@fortawesome/free-regular-svg-icons": "^7.3.1",
+    "@fortawesome/free-solid-svg-icons": "^7.3.1",
+    "express": "^5.1.0",
+    "firebase": "^13.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
-    "@sveltejs/adapter-auto": "^7.0.0",
-    "@sveltejs/kit": "^2.50.1",
-    "@sveltejs/vite-plugin-svelte": "^6.2.4",
-    "gh-pages": "^6.3.0",
-    "svelte": "^5.48.2",
-    "svelte-check": "^4.3.5",
-    "typescript": "^5.9.3",
-    "vite": "^7.3.1"
-  },
-  "dependencies": {
-    "@sveltejs/adapter-static": "^3.0.10",
-    "firebase": "^12.8.0"
+    "@angular/build": "^22.0.6",
+    "@angular/cli": "^22.0.6",
+    "@angular/compiler-cli": "^22.0.0",
+    "@tailwindcss/postcss": "^4.1.12",
+    "@types/express": "^5.0.1",
+    "@types/node": "^20.17.19",
+    "jsdom": "^28.0.0",
+    "postcss": "^8.5.3",
+    "prettier": "^3.8.1",
+    "tailwindcss": "^4.1.12",
+    "typescript": "~6.0.2",
+    "vitest": "^4.0.8"
   }
 }

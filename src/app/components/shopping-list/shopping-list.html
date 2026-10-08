@@ -1,0 +1,65 @@
+<div class="min-h-screen flex items-center justify-center">
+  <div
+    class="w-full md:max-w-150 min-h-screen h-dvh md:h-auto md:max-h-[90vh] bg-[linear-gradient(135deg,#5b548a,#301934)] mt-25 mb-5 mx-auto p-[40px_30px_70px] rounded-[10px] overflow-y-auto shadow-xl flex flex-col">
+    <app-header />
+
+
+    @if (auth.isLoggedIn()) {
+    <!-- List -->
+    <app-item-form />
+    <ul class="mt-1.5">
+      @for (item of list.items() | keyvalue; track item.key) {
+      <app-shopping-item [item]="item.value" />
+      } @empty {
+      @if (list.loading()) {
+      <p class="empty-list py-6 text-center text-lg text-white">Loading shopping list...</p>
+      } @else {
+      <p class="empty-list py-6 text-center text-lg text-white">Shopping List is Empty</p>
+      }
+      }
+    </ul>
+
+    <!-- Edit / Delete buttons -->
+    @if (list.selectedCount() > 0 && !list.loading()) {
+    <div class="mx-auto mt-6 flex w-full max-w-md flex-col gap-3">
+      @if (list.singleSelectedItem()) {
+      <button
+        class="flex flex-1 justify-center border-0 outline-none p-2.5 bg-[rgb(0,119,255)] text-white text-base cursor-pointer rounded-[40px]"
+        (click)="startEdit()">
+        <fa-icon [icon]="faEdit"></fa-icon>
+        Edit selected item
+      </button>
+      }
+      <button
+        class="flex flex-1 justify-center border-0 outline-none p-2.5 bg-red-700 text-white text-base cursor-pointer rounded-[40px]"
+        (click)="showConfirmDelete.set(true)">
+        <fa-icon [icon]="faTrash"></fa-icon>
+        Delete {{ list.selectedCount() }} selected
+        item{{ list.selectedCount() === 1 ? '' : 's' }}
+      </button>
+    </div>
+    }
+    } @else {
+    <p class="flex-1 text-center text-white m-0 flex items-center justify-center gap-2 mb-5">Please login to view your
+      shopping list.</p>
+    }
+
+
+    <app-footer class="mt-auto shrink-0 pt-4" />
+
+    @if (showConfirmDelete()) {
+    <app-confirm-dialog title="Delete selected items?" [message]="
+          'This will delete ' +
+          list.selectedCount() +
+          ' item' +
+          (list.selectedCount() === 1 ? '' : 's')
+        " confirmText="Yes, Delete" [loading]="list.isDeleting()" (confirm)="deleteSelectedItems()"
+      (cancel)="showConfirmDelete.set(false)" />
+    }
+    @if (showEditModal()) {
+    @if (editingItem(); as item) {
+    <app-edit-modal [item]="item" (save)="onEditSave($event)" (cancel)="cancelEdit()" />
+    }
+    }
+  </div>
+</div>

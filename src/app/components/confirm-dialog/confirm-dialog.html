@@ -1,0 +1,22 @@
+<div class="fixed inset-0 z-2000 flex items-center justify-center bg-black/85 p-4" (click)="onCancel()">
+  <div
+    class="w-full max-w-md rounded-2xl bg-linear-to-br from-[#5b548a] to-[#301934] p-6 text-center text-white shadow-2xl"
+    (click)="$event.stopPropagation()">
+    <h3 class="mb-3 text-2xl font-medium">{{ title() }}</h3>
+
+    <p class="mb-6 text-base text-white/90">{{ message() }}</p>
+
+    <div class="flex flex-col gap-3 sm:flex-row sm:justify-center">
+      <button type="button"
+        class="rounded-full bg-red-700 px-6 py-3 text-white transition hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-60"
+        (click)="onConfirm()" [disabled]="loading()">
+        {{ loading() ? 'Deleting...' : confirmText() }}
+      </button>
+
+      <button type="button" class="rounded-full bg-gray-600 px-6 py-3 text-white transition hover:bg-gray-500"
+        (click)="onCancel()" [disabled]="loading()">
+        {{ cancelText() }}
+      </button>
+    </div>
+  </div>
+</div>
