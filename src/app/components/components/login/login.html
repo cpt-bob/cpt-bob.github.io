@@ -1,0 +1,27 @@
+<div class="fixed inset-0 z-999 flex items-center justify-center bg-black/75" (click)="cancel()">
+  <div class="w-[90%] max-w-112.5 rounded-xl bg-slate-400 p-5 shadow-xl" (click)="$event.stopPropagation()">
+    <h3 class="mb-5 text-center text-xl font-medium text-black">Login</h3>
+
+    @if (error()) {
+    <p class="mb-3 rounded-md bg-red-700 px-3 py-2 text-sm text-red-100">
+      {{ error() }}
+    </p>
+    }
+
+    <div class="mb-4 flex items-center rounded-full bg-gray-200 pl-5">
+      <input id="email-input" type="email" class="w-full bg-transparent px-3 py-2.5 outline-none" [(ngModel)]="email"
+        placeholder="Email Address" (keydown)="onEmailKeydown($event)" autofocus />
+    </div>
+
+    <div class="mb-5 flex items-center rounded-full bg-gray-200 pl-5">
+      <input id="password-input" type="password" class="w-full bg-transparent px-3 py-2.5 outline-none"
+        [(ngModel)]="password" placeholder="Password" (keydown)="onPasswordKeydown($event)" />
+    </div>
+
+    <button
+      class="w-full rounded-full bg-blue-600 py-2.5 text-base text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+      (click)="login()" [disabled]="loading() || !email.trim() || !password">
+      {{ loading() ? 'Logging in...' : 'Login' }}
+    </button>
+  </div>
+</div>

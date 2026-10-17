@@ -1,0 +1,27 @@
+<div class="mx-auto mb-5 flex w-full max-w-md flex-col gap-3">
+  <div class="flex w-full items-center rounded-full bg-gray-200 pl-5">
+    <select class="w-full appearance-none bg-transparent px-3 py-2.5 text-black outline-none" [(ngModel)]="store">
+      <option value="" disabled selected>Store</option>
+      @for (s of stores; track s) {
+      <option [value]="s">{{ s }}</option>
+      }
+    </select>
+  </div>
+  <div class="flex w-full items-center rounded-full bg-gray-200 pl-5">
+    <input id="item-input" type="text"
+      class="w-full bg-transparent px-3 py-2.5 text-black outline-none placeholder:text-gray-500" [(ngModel)]="itemName"
+      placeholder="Item to buy" (keydown)="onItemKeydown($event)" />
+  </div>
+
+  <div class="flex w-full items-center rounded-full bg-gray-200 pl-5">
+    <input id="quantity-input" type="text"
+      class="w-full bg-transparent px-3 py-2.5 text-black outline-none placeholder:text-gray-500" [(ngModel)]="quantity"
+      placeholder="Quantity" (keydown)="onQuantityKeydown($event)" />
+  </div>
+
+  <button type="button"
+    class="w-full rounded-full bg-blue-600 py-2.5 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+    (click)="add()" [disabled]="!itemName.trim() || !quantity.trim() || list.isAdding()">
+    {{ list.isAdding() ? 'Adding...' : 'Add' }}
+  </button>
+</div>

@@ -22,11 +22,12 @@
     "@angular/platform-server": "^22.0.0",
     "@angular/router": "^22.0.0",
     "@angular/ssr": "^22.0.6",
+    "@fastify/static": "^10.1.6",
     "@fortawesome/angular-fontawesome": "^5.1.0",
     "@fortawesome/fontawesome-free": "^7.3.1",
     "@fortawesome/free-regular-svg-icons": "^7.3.1",
     "@fortawesome/free-solid-svg-icons": "^7.3.1",
-    "express": "^5.1.0",
+    "fastify": "^5.12.7",
     "firebase": "^13.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
