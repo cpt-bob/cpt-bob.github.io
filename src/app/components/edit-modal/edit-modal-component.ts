@@ -5,7 +5,6 @@ import { STORES } from '../../models/stores';
 
 @Component({
   selector: 'app-edit-modal',
-  standalone: true,
   imports: [FormsModule],
   templateUrl: './edit-modal.html',
 })

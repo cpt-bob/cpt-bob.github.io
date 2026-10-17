@@ -4,10 +4,8 @@ import { AuthService } from '../../services/auth-service'; // adjust path if nee
 
 @Component({
   selector: 'app-login',
-  standalone: true,
   imports: [FormsModule],
   templateUrl: './login.html',
-  styleUrl: './login.css',
 })
 export class LoginComponent {
   private auth = inject(AuthService);

@@ -14,7 +14,6 @@ import { EditModalComponent } from '../edit-modal/edit-modal-component';
 
 @Component({
   selector: 'app-shopping-list',
-  standalone: true,
   imports: [
     FontAwesomeModule,
     CommonModule,
@@ -26,14 +25,13 @@ import { EditModalComponent } from '../edit-modal/edit-modal-component';
     EditModalComponent,
   ],
   templateUrl: './shopping-list.html',
-  styleUrl: './shopping-list.css',
 })
 export class ShoppingListComponent {
   readonly list = inject(ShoppingListService);
   readonly auth = inject(AuthService);
 
-  faTrash = faTrash;
-  faEdit = faEdit;
+  readonly faTrash = faTrash;
+  readonly faEdit = faEdit;
 
   showConfirmDelete = signal(false);
   showEditModal = signal(false);

@@ -5,10 +5,8 @@ import { STORES } from '../../models/stores';
 
 @Component({
   selector: 'app-item-form',
-  standalone: true,
   imports: [FormsModule],
   templateUrl: './item-form.html',
-  styleUrl: './item-form.css',
 })
 export class ItemFormComponent {
   readonly list = inject(ShoppingListService);

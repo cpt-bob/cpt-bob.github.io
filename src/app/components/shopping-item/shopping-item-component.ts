@@ -6,16 +6,14 @@ import { ShoppingListService } from '../../services/shopping-list-service';
 
 @Component({
   selector: 'app-shopping-item',
-  standalone: true,
   imports: [FontAwesomeModule],
   templateUrl: './shopping-item.html',
-  styleUrl: './shopping-item.css',
 })
 export class ShoppingItemComponent {
-  item = input.required<ShoppingItem>();
-  private list = inject(ShoppingListService);
+  readonly item = input.required<ShoppingItem>();
+  private readonly list = inject(ShoppingListService);
 
-  faCheck = faCheck;
+  readonly faCheck = faCheck;
 
   toggle() {
     this.list.toggleChecked(this.item().itemId);

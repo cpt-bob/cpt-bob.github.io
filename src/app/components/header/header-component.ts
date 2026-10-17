@@ -5,10 +5,8 @@ import { LoginComponent } from '../login/login';
 
 @Component({
   selector: 'app-header',
-  standalone: true,
   imports: [FontAwesomeModule, LoginComponent],
   templateUrl: './header.html',
-  styleUrl: './header.css',
 })
 export class HeaderComponent {
   readonly auth = inject(AuthService);
